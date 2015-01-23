@@ -69,7 +69,10 @@
         return lines;
     };
 
-    var dump = function() {
+    var dump = function(header) {
+        if (header) {
+            console.log(header);
+        }
         var lines = createDump();
         var str = lines.join('\n');
         console.log(str);
@@ -95,6 +98,22 @@
             if (mnemonic === "HLT") {
                 memory[i] = 0;
             }
+            else
+            if (mnemonic.indexOf('ADD') === 0) {
+                memory[i] = 100 + Number(mnemonic.substr(3));
+            }
+            else
+            if (mnemonic.indexOf('SUB') === 0) {
+                memory[i] = 200 + Number(mnemonic.substr(3));
+            }
+            else
+            if (mnemonic.indexOf("STA") === 0) {
+                memory[i] = 300 + Number(mnemonic.substr(3));
+            }
+            else
+            if (mnemonic.indexOf("LDA") === 0) {
+                memory[i] = 400 + Number(mnemonic.substr(3));
+            }
         }
     };
 
@@ -103,9 +122,9 @@
       , buffer: ["23"]
       , get: function() {
             if (this.idx < this.buffer.length) {
-                var next = this.buffer[this.idx];
+                LMC.input = this.buffer[this.idx];
                 this.idx++;
-                return next;                
+                return LMC.input;                
             }
             else {
                 console.error("No Input left! Input Buffer has been depleted");
@@ -118,6 +137,9 @@
 
         LMC.instruction = LMC.ram[LMC.program_counter];
 
+        var opcode = Math.floor(LMC.instruction / 100);
+        var data = LMC.instruction % 100;
+
         if (LMC.instruction === 901) {
             LMC.accumulator = input.get();
         }
@@ -129,6 +151,22 @@
         if (LMC.instruction === 0) {
             return true;
         }
+        else
+        if (opcode === 1) { // ADD
+            LMC.accumulator = Number(LMC.accumulator) + Number(LMC.ram[data]);
+        }
+        else
+        if (opcode === 2) { // SUBSTRACT
+            LMC.accumulator = Number(LMC.accumulator) - Number(LMC.ram[data]);
+        }
+        else
+        if (opcode === 3) {
+            LMC.ram[data] = LMC.accumulator;
+        }
+        else
+        if (opcode === 4) {
+            LMC.accumulator = LMC.ram[data];
+        }
 
         // Advance to next instruction
         LMC.program_counter++;
@@ -136,11 +174,15 @@
     };
 
     var run = function() {
+        var i = 0;
+
         while (true) {
             var stop = step();
+            //dump("=== " + i + " ===");
             if (stop) {
                 break;
             }
+            i++;
         }
         console.log("\nProgram halted!\n\n");
     };
@@ -149,12 +191,21 @@
         reset();
         dump();
 
-        var mnemonics = ["INP", "OUT", "HLT"];
+        var mnemonics = ["INP", "STA 8", "ADD 8", "OUT", "HLT"];
         load(mnemonics, LMC.ram);
         dump();
 
         run();
         dump();
+
+        // Idea for assert and testing:
+        
+        // assert(LMC, {
+        //     accumulator: 46
+        //   , program_counter: 4
+        //   , input: 23
+        //   , output: 46
+        // })
     };
 
     main();
