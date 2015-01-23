@@ -1,11 +1,10 @@
 (function() {
     "use strict";
 
-    var USE_UNDEF = false;
-    var MAILBOX_UNDEFINED = (USE_UNDEF) ? '---' : '000';
+    var USE_UNDEF_MAILBOX = false;
+    var MAILBOX_UNDEFINED = (USE_UNDEF_MAILBOX) ? '---' : '000';
 
-    // Based on: http://matt.krutar.org/LMC4/
-    var LMC = {
+    var LMC = { // Based on: http://matt.krutar.org/LMC4/
         accumulator: 0
       , program_counter: 0
       , instruction: 0
