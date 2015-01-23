@@ -160,11 +160,11 @@
             LMC.accumulator = Number(LMC.accumulator) - Number(LMC.ram[data]);
         }
         else
-        if (opcode === 3) {
+        if (opcode === 3) { // STORE from accumulator
             LMC.ram[data] = LMC.accumulator;
         }
         else
-        if (opcode === 4) {
+        if (opcode === 4) { // LOAD into accumulator
             LMC.accumulator = LMC.ram[data];
         }
 
@@ -199,7 +199,7 @@
         dump();
 
         // Idea for assert and testing:
-        
+
         // assert(LMC, {
         //     accumulator: 46
         //   , program_counter: 4
