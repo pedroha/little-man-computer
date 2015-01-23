@@ -7,3 +7,5 @@ $ node lmc.js
 
 Features:
 1) LMC State + Core dump debugger
+2) Load, step, run for: INP. OUT. HLT
+
