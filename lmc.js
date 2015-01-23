@@ -46,8 +46,10 @@
         var codesPerLine = 4;
 
         var ramLine = "";
-        var ram = LMC.ram;
 
+        lines.push("RAM:");
+
+        var ram = LMC.ram;
         for (var i = 0; i < ram.length; i++) {
             if (i % codesPerLine === 0) {
                 var address = padZero(i) + '-' + padZero((i+codesPerLine-1));
@@ -63,7 +65,7 @@
     };
 
     reset();
-    
+
     var core = dump();
 
     console.log(core);
