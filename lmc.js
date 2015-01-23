@@ -98,8 +98,19 @@
         }
     };
 
-    var getNextInput = function() {
-        return "23";
+    var input = {
+        idx: 0
+      , buffer: ["23"]
+      , get: function() {
+            if (this.idx < this.buffer.length) {
+                var next = this.buffer[this.idx];
+                this.idx++;
+                return next;                
+            }
+            else {
+                console.error("No Input left! Input Buffer has been depleted");
+            }
+        }
     };
 
     var step = function() {
@@ -108,7 +119,7 @@
         LMC.instruction = LMC.ram[LMC.program_counter];
 
         if (LMC.instruction === 901) {
-            LMC.accumulator = getNextInput();
+            LMC.accumulator = input.get();
         }
         else
         if (LMC.instruction === 902) {
@@ -147,5 +158,8 @@
     };
 
     main();
+
+    // input.get();
+    // input.get();
 
 })();
