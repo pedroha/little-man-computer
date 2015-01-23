@@ -70,12 +70,15 @@
     };
 
     var dump = function(header) {
+        var lines = createDump();
+        var str = lines.join('\n');
+
+        console.log("============ CORE DUMP ==========");
         if (header) {
             console.log(header);
         }
-        var lines = createDump();
-        var str = lines.join('\n');
         console.log(str);
+        console.log("==================================");
     };
 
     /*
@@ -113,6 +116,10 @@
             else
             if (mnemonic.indexOf("LDA") === 0) {
                 memory[i] = 400 + Number(mnemonic.substr(3));
+            }
+            else
+            if (mnemonic.indexOf("DAT") === 0) {
+                memory[i] = Number(mnemonic.substr(3));
             }
         }
     };
@@ -191,7 +198,9 @@
         reset();
         dump();
 
-        var mnemonics = ["INP", "STA 8", "ADD 8", "OUT", "HLT"];
+        // var mnemonics = ["INP", "OUT", "HLT"];
+        // var mnemonics = ["INP", "STA 8", "ADD 8", "OUT", "HLT"];
+        var mnemonics = ["INP", "STA 16", "ADD 16", "ADD 8", "OUT", "HLT", "DAT 1", "DAT 2", "DAT 3"];
         load(mnemonics, LMC.ram);
         dump();
 
