@@ -1,7 +1,7 @@
 (function() {
     "use strict";
 
-    var USE_UNDEF = true;
+    var USE_UNDEF = false;
     var MAILBOX_UNDEFINED = (USE_UNDEF) ? '---' : '000';
 
     // Based on: http://matt.krutar.org/LMC4/
@@ -15,16 +15,16 @@
     };
 
     var reset = function() {
-      LMC.accumulator = 0;
-      LMC.program_counter = 0;
-      LMC.instruction = 0;
-      LMC.ram = [];
-      LMC.input = 0;
-      LMC.output = 0;
+        LMC.accumulator = 0;
+        LMC.program_counter = 0;
+        LMC.instruction = 0;
+        LMC.ram = [];
+        LMC.input = 0;
+        LMC.output = 0;
 
-      for (var i = 0; i < 100; i++) {
-        LMC.ram[i] = MAILBOX_UNDEFINED;
-      }
+        for (var i = 0; i < 100; i++) {
+            LMC.ram[i] = MAILBOX_UNDEFINED;
+        }
     };
 
     var padZero = function(val) {
@@ -55,13 +55,12 @@
 
         lines.push("RAM:");
 
-        var ram = LMC.ram;
-        for (var i = 0; i < ram.length; i++) {
+        for (var i = 0; i < LMC.ram.length; i++) {
             if (i % codesPerLine === 0) {
                 var address = padZero(i) + '-' + padZero((i+codesPerLine-1));
                 ramLine = address + " : ";
             }
-            ramLine = ramLine + " " + mailbox(ram[i]);
+            ramLine = ramLine + " " + mailbox(LMC.ram[i]);
 
             if (i % codesPerLine === codesPerLine-1) {
                 lines.push(ramLine);
@@ -74,24 +73,65 @@
         var lines = createDump();
         var str = lines.join('\n');
         console.log(str);
-    }
+    };
 
+    /*
+     *  load(mnemonics, memory):
+     *
+     *  - Converts mnemonics into 3-digit opcode instructions
+     */
     var load = function(mnemonics, memory) {
         for (var i = 0; i < mnemonics.length; i++) {
             var mnemonic = mnemonics[i];
 
             if (mnemonic === "INP") {
-                memory[i] = "901";
+                memory[i] = 901;
             }
             else
             if (mnemonic === "OUT") {
-                memory[i] = "902";
+                memory[i] = 902;
             }
             else
             if (mnemonic === "HLT") {
-                memory[i] = "000";
+                memory[i] = 0;
             }
         }
+    };
+
+    var getNextInput = function() {
+        return "23";
+    };
+
+    var step = function() {
+        var data;
+
+        LMC.instruction = LMC.ram[LMC.program_counter];
+
+        if (LMC.instruction === 901) {
+            LMC.accumulator = getNextInput();
+        }
+        else
+        if (LMC.instruction === 902) {
+            LMC.output = LMC.accumulator;
+        }
+        else
+        if (LMC.instruction === 0) {
+            return true;
+        }
+
+        // Advance to next instruction
+        LMC.program_counter++;
+        return false;
+    };
+
+    var run = function() {
+        while (true) {
+            var stop = step();
+            if (stop) {
+                break;
+            }
+        }
+        console.log("\nProgram halted!\n\n");
     };
 
     var main = function() {
@@ -100,7 +140,9 @@
 
         var mnemonics = ["INP", "OUT", "HLT"];
         load(mnemonics, LMC.ram);
+        dump();
 
+        run();
         dump();
     };
 
