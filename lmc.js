@@ -160,7 +160,7 @@
         var data = LMC.instruction % 100;
 
         if (LMC.instruction === 901) {
-            LMC.accumulator = input.get();
+            LMC.accumulator = Number(input.get());
         }
         else
         if (LMC.instruction === 902) {
@@ -172,11 +172,11 @@
         }
         else
         if (opcode === 1) { // ADD
-            LMC.accumulator = Number(LMC.accumulator) + Number(LMC.ram[data]);
+            LMC.accumulator = LMC.accumulator + LMC.ram[data];
         }
         else
         if (opcode === 2) { // SUBSTRACT
-            LMC.accumulator = Number(LMC.accumulator) - Number(LMC.ram[data]);
+            LMC.accumulator = LMC.accumulator - LMC.ram[data];
         }
         else
         if (opcode === 3) { // STORE from accumulator
