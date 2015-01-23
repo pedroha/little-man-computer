@@ -98,7 +98,7 @@
                 memory[i] = 902;
             }
             else
-            if (mnemonic === "HLT") {
+            if (mnemonic === "HLT" || mnemonic === "COB") { // Halt or Coffee break
                 memory[i] = 0;
             }
             else
@@ -120,6 +120,18 @@
             else
             if (mnemonic.indexOf("DAT") === 0) {
                 memory[i] = Number(mnemonic.substr(3));
+            }
+            else
+            if (mnemonic.indexOf("BRA") === 0) {
+                memory[i] = 600 + Number(mnemonic.substr(3));
+            }
+            else
+            if (mnemonic.indexOf("BRZ") === 0) {
+                memory[i] = 700 + Number(mnemonic.substr(3));
+            }
+            else
+            if (mnemonic.indexOf("BRP") === 0) {
+                memory[i] = 800 + Number(mnemonic.substr(3));
             }
         }
     };
@@ -174,9 +186,34 @@
         if (opcode === 4) { // LOAD into accumulator
             LMC.accumulator = LMC.ram[data];
         }
+        else
+        if (opcode === 6) { // BRANCH unconditional
+            LMC.program_counter = data;
+        }
+        else
+        if (opcode === 7) { // BRANCH zero
+            if (LMC.accumulator === 0) {
+                LMC.program_counter = data;            
+            }
+            else {
+                LMC.program_counter++;
+            }
+        }
+        else
+        if (opcode === 8) { // BRANCH positive
+            if (LMC.accumulator >= 0) {
+                LMC.program_counter = data;            
+            }
+            else {
+                LMC.program_counter++;
+            }
+        }
 
-        // Advance to next instruction
-        LMC.program_counter++;
+        var isBranchOpcode = (5 < opcode && opcode < 9);
+        if (!isBranchOpcode) { 
+            // Advance to next instruction
+            LMC.program_counter++;
+        }
         return false;
     };
 
@@ -200,7 +237,10 @@
 
         // var mnemonics = ["INP", "OUT", "HLT"];
         // var mnemonics = ["INP", "STA 8", "ADD 8", "OUT", "HLT"];
+        // var mnemonics = ["INP", "STA 16", "ADD 16", "ADD 8", "OUT", "HLT", "DAT 1", "DAT 2", "DAT 3"];
+
         var mnemonics = ["INP", "STA 16", "ADD 16", "ADD 8", "OUT", "HLT", "DAT 1", "DAT 2", "DAT 3"];
+
         load(mnemonics, LMC.ram);
         dump();
 
