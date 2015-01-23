@@ -27,7 +27,7 @@
 
     var padZero = function(val) {
         var str = "" + val;
-        var extras = 4 - str.length;
+        var extras = 3 - str.length;
 
         for (var i = 0; i < extras; i++) {
             str = "0" + str;
@@ -35,7 +35,7 @@
         return str;
     }
 
-    var getDump = function() {
+    var dump = function() {
         var lines = [];
 
         lines.push("ACCUMULATOR: " + LMC.accumulator);
@@ -50,21 +50,21 @@
 
         for (var i = 0; i < ram.length; i++) {
             if (i % codesPerLine === 0) {
-                var address = padZero(i);
+                var address = padZero(i) + '-' + padZero((i+codesPerLine-1));
                 ramLine = address + " - " + padZero(ram[i]);
             }
             ramLine = ramLine + " " + padZero(ram[i]);
 
             if (i % codesPerLine === codesPerLine-1) {
-                lines.push(ramLine + '\n');
+                lines.push(ramLine);
             }
         }
         return lines;
     };
 
     reset();
+    
+    var core = dump();
 
-    var dump = getDump();
-    console.log(dump);
-
+    console.log(core);
 })();
