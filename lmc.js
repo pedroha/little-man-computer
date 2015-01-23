@@ -136,22 +136,7 @@
         }
     };
 
-    var input = {
-        idx: 0
-      , buffer: ["23"]
-      , get: function() {
-            if (this.idx < this.buffer.length) {
-                LMC.input = this.buffer[this.idx];
-                this.idx++;
-                return LMC.input;                
-            }
-            else {
-                console.error("No Input left! Input Buffer has been depleted");
-            }
-        }
-    };
-
-    var step = function() {
+    var step = function(input) {
         var data;
 
         LMC.instruction = LMC.ram[LMC.program_counter];
@@ -217,11 +202,11 @@
         return false;
     };
 
-    var run = function() {
+    var run = function(input) {
         var i = 0;
 
         while (true) {
-            var stop = step();
+            var stop = step(input);
             //dump("=== " + i + " ===");
             if (stop) {
                 break;
@@ -235,6 +220,20 @@
         reset();
         dump();
 
+        var input = {
+            idx: 0
+          , buffer: ["23", "2"]
+          , get: function() {
+                if (this.idx < this.buffer.length) {
+                    LMC.input = this.buffer[this.idx];
+                    this.idx++;
+                    return LMC.input;                
+                }
+                else {
+                    console.error("No Input left! Input Buffer has been depleted");
+                }
+            }
+        };
         // var mnemonics = ["INP", "OUT", "HLT"];
         // var mnemonics = ["INP", "STA 8", "ADD 8", "OUT", "HLT"];
         // var mnemonics = ["INP", "STA 16", "ADD 16", "ADD 8", "OUT", "HLT", "DAT 1", "DAT 2", "DAT 3"];
@@ -244,7 +243,7 @@
         load(mnemonics, LMC.ram);
         dump();
 
-        run();
+        run(input);
         dump();
 
         // Idea for assert and testing:
