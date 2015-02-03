@@ -135,20 +135,22 @@
         }
     };
 
-    var step = function(input) {
-        var data;
-
+    var step = function(input, output) {
         LMC.instruction = LMC.ram[LMC.program_counter];
 
         var opcode = Math.floor(LMC.instruction / 100);
         var data = LMC.instruction % 100;
 
         if (LMC.instruction === 901) {
-            LMC.accumulator = Number(input.get());
+            LMC.input = Number(input.get());
+            LMC.accumulator = LMC.input;
         }
         else
         if (LMC.instruction === 902) {
             LMC.output = LMC.accumulator;
+            if (output) {
+                output.put(LMC.output);
+            }
         }
         else
         if (LMC.instruction === 0) {
@@ -201,11 +203,11 @@
         return false;
     };
 
-    var run = function(input) {
+    var run = function(input, output) {
         var i = 0;
 
         while (true) {
-            var stop = step(input);
+            var stop = step(input, output);
             //dump("=== " + i + " ===");
             if (stop) {
                 break;
@@ -224,13 +226,24 @@
           , buffer: ["23", "2"]
           , get: function() {
                 if (this.idx < this.buffer.length) {
-                    LMC.input = this.buffer[this.idx];
+                    var value = this.buffer[this.idx];
                     this.idx++;
-                    return LMC.input;                
+                    return value;                
                 }
                 else {
                     console.error("No Input left! Input Buffer has been depleted");
+                    throw new Error("No input in buffer");
                 }
+            }
+        };
+
+        var output = {
+            buffer: []
+          , put: function(data) {
+                this.buffer.push(data);
+            }
+          , print: function() {
+                console.log(this.buffer);
             }
         };
         // var mnemonics = ["INP", "OUT", "HLT"];
@@ -242,7 +255,7 @@
         load(mnemonics, LMC.ram);
         dump();
 
-        run(input);
+        run(input, output);
         dump();
 
         // Idea for assert and testing:
@@ -253,6 +266,9 @@
         //   , input: 23
         //   , output: 46
         // })
+
+        console.log("------");
+        output.print();
     };
 
     main();
